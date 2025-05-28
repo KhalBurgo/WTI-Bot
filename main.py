@@ -8,18 +8,27 @@ import aiohttp
 from keep_alive import keep_alive  # Flask server per Render
 
 intents = discord.Intents.default()
-intents.message_content = False
+intents.message_content = False  # Lascia pure False, se usi solo slash command
+
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
     print(f"✅ Bot connesso come {bot.user}")
     try:
-        guild = discord.Object(id=1124308157418717215)  # Il tuo server ID
+        guild = discord.Object(id=1124308157418717215)  # Sostituisci col tuo server ID
         synced = await bot.tree.sync(guild=guild)
         print(f"🔄 Comandi slash sincronizzati: {len(synced)}")
+        for cmd in synced:
+            print(f"🔸 {cmd.name}")
     except Exception as e:
         print(f"❌ Errore sync: {e}")
+
+# ✅ Comando manuale per forzare la sincronizzazione
+@bot.command()
+async def sync(ctx):
+    synced = await bot.tree.sync(guild=discord.Object(id=1124308157418717215))
+    await ctx.send(f"✅ Comandi sincronizzati: {len(synced)}")
 
 @bot.tree.command(name="help", description="Mostra i comandi disponibili")
 async def help_command(interaction: discord.Interaction):
