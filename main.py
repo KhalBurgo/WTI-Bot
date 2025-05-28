@@ -8,7 +8,7 @@ import aiohttp
 from keep_alive import keep_alive  # Per mantenere attivo su Render
 
 intents = discord.Intents.default()
-intents.message_content = False  # Non serve se usi solo slash command
+intents.message_content = True  # Non serve se usi solo slash command
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
