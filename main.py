@@ -24,6 +24,14 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Errore sync: {e}")
 
+@bot.tree.error
+async def on_app_command_error(interaction: discord.Interaction, error):
+    print(f"❌ Errore comando slash: {error}")
+    try:
+        await interaction.response.send_message("❌ Si è verificato un errore nel comando.", ephemeral=True)
+    except Exception:
+        pass
+
 # ✅ Comando manuale per forzare la sincronizzazione
 @bot.command()
 async def sync(ctx):
