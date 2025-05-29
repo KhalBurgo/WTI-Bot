@@ -1,13 +1,18 @@
 from discord.ext import commands
 import discord
 import aiohttp
+from config import GUILD  # ← Usa un file config.py per evitare problemi
 
 class Player(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @discord.app_commands.command(name="player", description="Genera il link al profilo War Thunder del giocatore")
+    @discord.app_commands.command(
+        name="player",
+        description="Genera il link al profilo War Thunder del giocatore"
+    )
     @discord.app_commands.describe(nomeplayer="Il nickname del giocatore su War Thunder")
+    @discord.app_commands.guilds(GUILD)  # ← Questa è la parte fondamentale
     async def player(self, interaction: discord.Interaction, nomeplayer: str):
         await interaction.response.defer()
         url = f"https://warthunder.com/en/community/userinfo?nick={nomeplayer}"
