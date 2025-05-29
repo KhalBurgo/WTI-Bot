@@ -3,3 +3,4 @@ aiohttp
 flask
 beautifulsoup4
 lxml
+psutil
