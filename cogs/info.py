@@ -23,8 +23,8 @@ class Info(commands.Cog):
         embed.add_field(name="🐍 Python", value=platform.python_version(), inline=True)
         embed.add_field(name="📦 Libreria Discord.py", value=discord.__version__, inline=True)
         embed.add_field(name="💻 Sistema operativo", value=platform.system(), inline=True)
-        embed.add_field(name="🧠 Creatore", value="Il tuo nome o nickname", inline=True)
-        embed.add_field(name="🔗 Server Discord", value="[War Thunder Italia](https://discord.gg/tuo-invito)", inline=False)
+        embed.add_field(name="🧠 Creatore", value="KhalBurgo", inline=True)
+        embed.add_field(name="🔗 Server Discord", value="[War Thunder Italia](https://discord.gg/sfKvKuNwjh)", inline=False)
 
         await interaction.response.send_message(embed=embed)
 
