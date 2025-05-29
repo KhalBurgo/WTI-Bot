@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import aiohttp
+from bs4 import BeautifulSoup
 from config import GUILD
 from datetime import datetime
 
@@ -19,12 +20,24 @@ class Player(commands.Cog):
         wt_url = f"https://warthunder.com/en/community/userinfo?nick={nomeplayer}"
         ts_url = f"https://thunderskill.com/en/stat/{nomeplayer}"
 
+        avatar_url = None
+
         async with aiohttp.ClientSession() as session:
             async with session.get(wt_url) as response:
                 html = await response.text()
                 if "Page not found on server." in html:
                     await interaction.followup.send(f"❌ Giocatore **{nomeplayer}** non trovato.")
                     return
+
+                # Parse HTML per trovare l'avatar
+                soup = BeautifulSoup(html, "lxml")
+                # Di solito l'avatar è in <img class="user-info__avatar-img" ...>
+                avatar_img = soup.find("img", class_="user-info__avatar-img")
+                if avatar_img and avatar_img.has_attr("src"):
+                    avatar_url = avatar_img["src"]
+                    # Controlla se è URL completo o relativo
+                    if avatar_url.startswith("//"):
+                        avatar_url = "https:" + avatar_url
 
         embed = discord.Embed(
             title=f"🔎 Profilo di {nomeplayer}",
@@ -34,7 +47,12 @@ class Player(commands.Cog):
             ),
             color=discord.Color.dark_blue()
         )
-        embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/en/2/2e/War_Thunder_logo.png")
+
+        if avatar_url:
+            embed.set_thumbnail(url=avatar_url)
+        else:
+            # fallback
+            embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/en/2/2e/War_Thunder_logo.png")
 
         now = datetime.utcnow().strftime("%d/%m/%Y %H:%M UTC")
         embed.set_footer(text=f"Richiesto il {now}")
@@ -43,4 +61,5 @@ class Player(commands.Cog):
 
 async def setup(bot):
     await bot.add_cog(Player(bot))
+
 
