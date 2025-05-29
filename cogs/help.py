@@ -12,6 +12,7 @@ class Help(commands.Cog):
         embed = discord.Embed(
             title="Comandi disponibili",
             description=(
+                "/info - Informazioni Bot\n"
                 "/help - Mostra questo messaggio\n"
                 "/ping - Verifica se il bot è online\n"
                 "/player <nickname> - Mostra il profilo del giocatore\n"
