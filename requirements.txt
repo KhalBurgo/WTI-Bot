@@ -4,4 +4,3 @@ flask
 beautifulsoup4
 lxml
 psutil
-dotenv
