@@ -7,7 +7,7 @@ class Ping(commands.Cog):
         self.bot = bot
 
     @discord.app_commands.command(name="ping", description="Risponde con Pong!")
-    @discord.app_commands.guilds(GUILD)  # ← NECESSARIO PER LA SYNC GUILD-ONLY
+    @discord.app_commands.guilds(GUILD)
     async def ping_command(self, interaction: discord.Interaction):
         await interaction.response.send_message("🏓 Pong!")
 
