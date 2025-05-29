@@ -149,16 +149,3 @@ async def fetch_squadron_info(squadron_name, embed_type=None):
         return embed
     else:
         return None
-
-
-def test_main():
-    try:
-        embed = asyncio.run(fetch_squadron_info("EXLY"))
-        if embed:
-            print(embed.to_dict())  # Debug output
-        else:
-            print("Failed to fetch squadron info.")
-    except RuntimeError as e:
-        print(f"Runtime error: {e}")
-
-#test_main()
