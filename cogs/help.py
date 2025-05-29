@@ -1,16 +1,13 @@
 from discord.ext import commands
 import discord
-from config import GUILD  # ← OK ORA
-
-# IMPORTANTE: importa l'oggetto GUILD dal main
-from main import GUILD
+from config import GUILD  # ← GIUSTO ORA
 
 class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @discord.app_commands.command(name="help", description="Mostra i comandi disponibili")
-    @discord.app_commands.guilds(GUILD)  # ← ASSOCIA IL COMANDO ALLA TUA GUILD
+    @discord.app_commands.guilds(GUILD)
     async def help_command(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title="Comandi disponibili",
