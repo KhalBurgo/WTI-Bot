@@ -97,7 +97,7 @@ async def player(interaction: discord.Interaction, nomeplayer: str):
     )
     await interaction.followup.send(embed=embed)
 
-# ✅ Comando /clan per mostrare le info dettagliate della squadriglia
+# Comando /clan per mostrare le info dettagliate della squadriglia
 @bot.tree.command(name="clan", description="Mostra informazioni su una squadriglia di War Thunder", guild=GUILD)
 @app_commands.describe(
     squadron="Il tag della squadriglia (es: WTI)",
