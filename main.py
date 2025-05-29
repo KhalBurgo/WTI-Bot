@@ -77,26 +77,46 @@ async def player(interaction: discord.Interaction, nomeplayer: str):
     await interaction.followup.send(embed=embed)
 
 # comando /clan
-from bs4 import BeautifulSoup  # Da installare con pip se non l'hai già
+from bs4 import BeautifulSoup
 
 @bot.tree.command(name="clan", description="Mostra il profilo e le info dello squadrone War Thunder", guild=GUILD)
-@app_commands.describe(nome="Il tag o nome completo dello squadrone (es: WTI)")
+@app_commands.describe(nome="Il nome o tag dello squadrone (es: WTI o War Thunder Italia)")
 async def clan(interaction: discord.Interaction, nome: str):
     await interaction.response.defer()
-    nome_url = urllib.parse.quote(nome)
+
+    # 1. Cerca il nome completo dallo short tag
+    search_url = f"https://warthunder.com/en/community/clans/?q={urllib.parse.quote(nome)}"
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(search_url) as search_response:
+            if search_response.status != 200:
+                await interaction.followup.send("❌ Errore nella ricerca dello squadrone.")
+                return
+            search_html = await search_response.text()
+
+    soup = BeautifulSoup(search_html, "html.parser")
+    first_result = soup.find("a", class_="squadron__link")
+
+    if not first_result:
+        await interaction.followup.send(f"❌ Squadrone **{nome}** non trovato.")
+        return
+
+    # 2. Ottieni nome completo dal primo risultato
+    nome_completo = first_result.find("div", class_="squadron__name").text.strip()
+    nome_url = urllib.parse.quote(nome_completo)
     link = f"https://warthunder.com/en/community/claninfo/{nome_url}"
 
+    # 3. Accedi alla pagina del clan e prendi i dati
     async with aiohttp.ClientSession() as session:
         async with session.get(link) as response:
             if response.status != 200:
-                await interaction.followup.send(f"❌ Squadrone **{nome}** non trovato.")
+                await interaction.followup.send(f"❌ Errore nel caricamento del profilo di **{nome_completo}**.")
                 return
             html = await response.text()
 
     soup = BeautifulSoup(html, 'html.parser')
 
     try:
-        # Cerca i dati nella pagina HTML
         title = soup.find("div", class_="squadron__name").text.strip()
         mmr = soup.find("div", class_="squadron__mmr-value").text.strip()
         rank = soup.find("div", class_="squadron__position").text.strip()
@@ -115,8 +135,8 @@ async def clan(interaction: discord.Interaction, nome: str):
 
     except Exception as e:
         embed = discord.Embed(
-            title=f"Clan: {nome}",
-            description=f"[Clicca qui per vedere la squadriglia]({link})\n⚠️ Impossibile estrarre i dati (potrebbe non esistere)",
+            title=f"Clan: {nome_completo}",
+            description=f"[Clicca qui per vedere la squadriglia]({link})\n⚠️ Impossibile estrarre i dati.",
             color=discord.Color.orange()
         )
         await interaction.followup.send(embed=embed)
