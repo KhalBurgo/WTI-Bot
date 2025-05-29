@@ -10,7 +10,7 @@ from keep_alive import keep_alive  # Per mantenere attivo su Render
 from SQ_Info import fetch_squadron_info
 
 # Importa la funzione per cercare il nome completo del clan a partire dal tag
-from Leaderboard_Parser import search_for_clan
+from Leaderboard import search_for_clan
 
 # Imposta gli intenti (message_content non serve se usi solo comandi slash)
 intents = discord.Intents.default()
