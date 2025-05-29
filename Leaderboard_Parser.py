@@ -1,11 +1,13 @@
 import asyncio
 import json
 import logging
-
 import aiohttp
 
+
+# Configura il livello di log a INFO per stampare messaggi nel terminale
 logging.basicConfig(level=logging.INFO)
 
+# Cache globale per evitare richieste ripetute se i dati sono già stati caricati
 cache = None
 
 async def fetch_clan_leaderboard(page=1):
