@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+from config import GUILD  # ← OK ORA
 
 # IMPORTANTE: importa l'oggetto GUILD dal main
 from main import GUILD
