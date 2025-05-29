@@ -28,13 +28,14 @@ GUILD = discord.Object(id=GUILD_ID)
 # Quando il bot è pronto
 @bot.event
 async def on_ready():
-    await bot.wait_until_ready()
+    # await bot.wait_until_ready()
     print(f"✅ Bot connesso come {bot.user}")
     
-    # ELIMINA comandi GLOBALI vecchi
+    # Elimina tutti i comandi globali (non legati a guild)
     global_commands = await bot.tree.fetch_commands()
     for cmd in global_commands:
-        await bot.tree.remove_command(cmd.name)
+        await cmd.delete()
+        print(f"❌ Comando globale rimosso: {cmd.name}")
 
     # Sincronizza solo i comandi a livello di guild (server)
     try:
