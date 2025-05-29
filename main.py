@@ -3,9 +3,9 @@ from discord.ext import commands
 import os
 from keep_alive import keep_alive
 from config import GUILD
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
