@@ -1,3 +1,4 @@
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -6,6 +7,7 @@ import urllib.parse
 import aiohttp
 
 from keep_alive import keep_alive  # Per mantenere attivo su Render
+from SQ_Info import fetch_squadron_info  # Importa dal file SQ_Info.py
 
 intents = discord.Intents.default()
 intents.message_content = True  # Non serve se usi solo slash command
@@ -48,7 +50,7 @@ async def help_command(interaction: discord.Interaction):
             "/help - Mostra questo messaggio\n"
             "/ping - Verifica se il bot è online\n"
             "/player <nickname> - Mostra il profilo del giocatore\n"
-            "/clan <squadriglia> - Mostra il profilo della squadriglia"
+            "/clan <tag> - Mostra info dettagliate della squadriglia"
         ),
         color=discord.Color.green()
     )
@@ -76,49 +78,23 @@ async def player(interaction: discord.Interaction, nomeplayer: str):
     )
     await interaction.followup.send(embed=embed)
 
-# comando /clan
-@bot.tree.command(name="clan", description="Mostra informazioni su una squadriglia di War Thunder")
+@bot.tree.command(name="clan", description="Mostra informazioni su una squadriglia di War Thunder", guild=GUILD)
 @app_commands.describe(
     squadron="Il tag della squadriglia (es: WTI)",
-    type="Tipo di informazione da mostrare: members oppure points"
+    type="Tipo di informazione: members, points o logs"
 )
 async def clan(interaction: discord.Interaction,
-               squadron: str = "",
+               squadron: str,
                type: str = ""):
     await interaction.response.defer(ephemeral=False)
 
-    filename = "SQUADRONS.json"
-    squadrons_json = client.download_as_text(filename)
-    squadrons = json.loads(squadrons_json)
-    guild_id = str(interaction.guild_id)
-
-    if not squadron:
-        if guild_id in squadrons:
-            squadron_name = squadrons[guild_id]["SQ_LongHandName"]
-        else:
-            embed = discord.Embed(
-                title="Errore",
-                description="Nessuna squadriglia specificata e nessuna configurata per questo server.",
-                color=discord.Color.red())
-            embed.set_footer(text="Meow :3")
-            await interaction.followup.send(embed=embed, ephemeral=True)
-            return
-    else:
-        clan_data = await search_for_clan(squadron.lower())
-        if not clan_data:
-            await interaction.followup.send("Squadriglia non trovata.", ephemeral=True)
-            return
-
-        squadron_name = clan_data.get("long_name")
-
-    embed = await fetch_squadron_info(squadron_name, type)
+    embed = await fetch_squadron_info(squadron.upper(), type)
 
     if embed:
-        embed.set_footer(text="Meow :3")
+        embed.set_footer(text="📊 Dati da warthunder.com")
         await interaction.followup.send(embed=embed)
     else:
-        await interaction.followup.send("Errore durante il recupero delle informazioni.", ephemeral=True)
-# Fine comando /clan
+        await interaction.followup.send("❌ Squadriglia non trovata o errore nel recupero dati.", ephemeral=True)
 
 keep_alive()
 bot.run(os.environ["TOKEN"])
