@@ -8,6 +8,7 @@ import aiohttp
 
 from keep_alive import keep_alive  # Per mantenere attivo su Render
 from SQ_Info import fetch_squadron_info  # Importa dal file SQ_Info.py
+from Leaderboard_Parser import search_for_clan
 
 intents = discord.Intents.default()
 intents.message_content = True  # Non serve se usi solo slash command
