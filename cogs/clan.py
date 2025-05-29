@@ -2,6 +2,7 @@ from discord.ext import commands
 import discord
 from Leaderboard import search_for_clan
 from SQ_Info import fetch_squadron_info
+from config import GUILD  # ← Importa GUILD dal config
 
 class Clan(commands.Cog):
     def __init__(self, bot):
@@ -12,6 +13,7 @@ class Clan(commands.Cog):
         squadron="Il tag della squadriglia (es: WTI)",
         type="Tipo di informazione: members, points o logs"
     )
+    @discord.app_commands.guilds(GUILD)  # ← Questo è fondamentale per la sincronizzazione
     async def clan(self, interaction: discord.Interaction,
                    squadron: str,
                    type: str = ""):
