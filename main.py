@@ -2,7 +2,10 @@ import discord
 from discord.ext import commands
 import os
 from keep_alive import keep_alive
-from config import GUILD # ← OK ORA
+from config import GUILD
+from dotenv import load_dotenv
+
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -13,7 +16,7 @@ async def on_ready():
     print(f"✅ Bot connesso come {bot.user}")
     try:
         for filename in os.listdir("./cogs"):
-            if filename.endswith(".py"):
+            if filename.endswith(".py") and filename != "__init__.py":
                 await bot.load_extension(f"cogs.{filename[:-3]}")
                 print(f"Cog caricato: {filename}")
         synced = await bot.tree.sync(guild=GUILD)
