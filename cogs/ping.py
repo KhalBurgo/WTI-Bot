@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from config import GUILD  # ← OK ORA
+from config import GUILD  # ← GIUSTO ORA
 
 class Ping(commands.Cog):
     def __init__(self, bot):
