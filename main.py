@@ -76,17 +76,48 @@ async def player(interaction: discord.Interaction, nomeplayer: str):
     )
     await interaction.followup.send(embed=embed)
 
-@bot.tree.command(name="clan", description="Mostra il link allo squadrone War Thunder", guild=GUILD)
-@app_commands.describe(nome="Il nome completo dello squadrone")
+# comando /clan
+@bot.tree.command(name="clan", description="Mostra il profilo e le info dello squadrone War Thunder", guild=GUILD)
+@app_commands.describe(nome="Il tag o nome completo dello squadrone (es: WTI)")
 async def clan(interaction: discord.Interaction, nome: str):
+    await interaction.response.defer()
     nome_url = urllib.parse.quote(nome)
     link = f"https://warthunder.com/en/community/claninfo/{nome_url}"
-    embed = discord.Embed(
-        title=f"Clan: {nome}",
-        description=f"[Clicca qui per vedere la squadriglia]({link})",
-        color=discord.Color.gold()
-    )
-    await interaction.response.send_message(embed=embed)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(link) as response:
+            if response.status != 200:
+                await interaction.followup.send(f"❌ Squadrone **{nome}** non trovato.")
+                return
+            try:
+                data = await response.json()
+                clan_data = data['squadron']
+                name = clan_data['name']
+                tag = clan_data['tag']
+                mmr = clan_data['mmr']
+                rank = clan_data['position']
+                members = clan_data['members_count']
+
+                embed = discord.Embed(
+                    title=f"🛡️ {name} [{tag}]",
+                    description=(
+                        f"🔗 [Profilo del clan]({link})\n"
+                        f"📊 MMR: **{mmr}**\n"
+                        f"🏅 Posizione: **#{rank}**\n"
+                        f"👥 Membri: **{members}**"
+                    ),
+                    color=discord.Color.dark_gold()
+                )
+                await interaction.followup.send(embed=embed)
+            except Exception:
+                # Se la risposta non è JSON strutturata
+                embed = discord.Embed(
+                    title=f"Clan: {nome}",
+                    description=f"[Clicca qui per vedere la squadriglia]({link})",
+                    color=discord.Color.gold()
+                )
+                await interaction.followup.send(embed=embed)
+# Fine comando /clan
 
 keep_alive()
 bot.run(os.environ["TOKEN"])
