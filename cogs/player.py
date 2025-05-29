@@ -39,12 +39,10 @@ class Player(commands.Cog):
             color=discord.Color.blue()
         )
 
-        embed.set_thumbnail(url="attachment://default.jpg")
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         embed.set_footer(text=f"Richiesta il {now}")
 
-        file = discord.File("avatar/default.jpg", filename="default.jpg")
-        await interaction.followup.send(embed=embed, file=file)
+        await interaction.followup.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(Player(bot))
