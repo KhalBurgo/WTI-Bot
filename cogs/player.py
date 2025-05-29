@@ -1,7 +1,8 @@
 from discord.ext import commands
 import discord
 import aiohttp
-from config import GUILD  # Usa un file config.py per evitare problemi
+from config import GUILD
+from datetime import datetime
 
 class Player(commands.Cog):
     def __init__(self, bot):
@@ -28,14 +29,18 @@ class Player(commands.Cog):
         embed = discord.Embed(
             title=f"🔎 Profilo di {nomeplayer}",
             description=(
-                f"\n📄 **War Thunder:** [Apri il profilo ufficiale]({wt_url})\n"
+                f"\n📄 **War Thunder:** [Apri il profilo ufficiale]({wt_url})\n\n"
                 f"📊 **ThunderSkill:** [Statistiche avanzate]({ts_url})"
             ),
             color=discord.Color.dark_blue()
         )
         embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/en/2/2e/War_Thunder_logo.png")
 
+        now = datetime.utcnow().strftime("%d/%m/%Y %H:%M UTC")
+        embed.set_footer(text=f"Richiesto il {now}")
+
         await interaction.followup.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(Player(bot))
+
