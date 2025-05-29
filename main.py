@@ -77,69 +77,47 @@ async def player(interaction: discord.Interaction, nomeplayer: str):
     await interaction.followup.send(embed=embed)
 
 # comando /clan
-from bs4 import BeautifulSoup
+@bot.tree.command(name="clan", description="Mostra informazioni su una squadriglia di War Thunder")
+@app_commands.describe(
+    squadron="Il tag della squadriglia (es: WTI)",
+    type="Tipo di informazione da mostrare: members oppure points"
+)
+async def clan(interaction: discord.Interaction,
+               squadron: str = "",
+               type: str = ""):
+    await interaction.response.defer(ephemeral=False)
 
-@bot.tree.command(name="clan", description="Mostra il profilo e le info dello squadrone War Thunder", guild=GUILD)
-@app_commands.describe(nome="Il nome o tag dello squadrone (es: WTI o War Thunder Italia)")
-async def clan(interaction: discord.Interaction, nome: str):
-    await interaction.response.defer()
+    filename = "SQUADRONS.json"
+    squadrons_json = client.download_as_text(filename)
+    squadrons = json.loads(squadrons_json)
+    guild_id = str(interaction.guild_id)
 
-    # 1. Cerca il nome completo dallo short tag
-    search_url = f"https://warthunder.com/en/community/clans/?q={urllib.parse.quote(nome)}"
+    if not squadron:
+        if guild_id in squadrons:
+            squadron_name = squadrons[guild_id]["SQ_LongHandName"]
+        else:
+            embed = discord.Embed(
+                title="Errore",
+                description="Nessuna squadriglia specificata e nessuna configurata per questo server.",
+                color=discord.Color.red())
+            embed.set_footer(text="Meow :3")
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            return
+    else:
+        clan_data = await search_for_clan(squadron.lower())
+        if not clan_data:
+            await interaction.followup.send("Squadriglia non trovata.", ephemeral=True)
+            return
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(search_url) as search_response:
-            if search_response.status != 200:
-                await interaction.followup.send("❌ Errore nella ricerca dello squadrone.")
-                return
-            search_html = await search_response.text()
+        squadron_name = clan_data.get("long_name")
 
-    soup = BeautifulSoup(search_html, "html.parser")
-    first_result = soup.find("a", class_="squadron__link")
+    embed = await fetch_squadron_info(squadron_name, type)
 
-    if not first_result:
-        await interaction.followup.send(f"❌ Squadrone **{nome}** non trovato.")
-        return
-
-    # 2. Ottieni nome completo dal primo risultato
-    nome_completo = first_result.find("div", class_="squadron__name").text.strip()
-    nome_url = urllib.parse.quote(nome_completo)
-    link = f"https://warthunder.com/en/community/claninfo/{nome_url}"
-
-    # 3. Accedi alla pagina del clan e prendi i dati
-    async with aiohttp.ClientSession() as session:
-        async with session.get(link) as response:
-            if response.status != 200:
-                await interaction.followup.send(f"❌ Errore nel caricamento del profilo di **{nome_completo}**.")
-                return
-            html = await response.text()
-
-    soup = BeautifulSoup(html, 'html.parser')
-
-    try:
-        title = soup.find("div", class_="squadron__name").text.strip()
-        mmr = soup.find("div", class_="squadron__mmr-value").text.strip()
-        rank = soup.find("div", class_="squadron__position").text.strip()
-        members = soup.find("div", class_="squadron__members-value").text.strip()
-
-        embed = discord.Embed(
-            title=f"🛡️ {title}",
-            description=f"🔗 [Pagina ufficiale]({link})",
-            color=discord.Color.dark_gold()
-        )
-        embed.add_field(name="📊 MMR", value=mmr)
-        embed.add_field(name="🏅 Posizione", value=rank)
-        embed.add_field(name="👥 Membri", value=members)
-
+    if embed:
+        embed.set_footer(text="Meow :3")
         await interaction.followup.send(embed=embed)
-
-    except Exception as e:
-        embed = discord.Embed(
-            title=f"Clan: {nome_completo}",
-            description=f"[Clicca qui per vedere la squadriglia]({link})\n⚠️ Impossibile estrarre i dati.",
-            color=discord.Color.orange()
-        )
-        await interaction.followup.send(embed=embed)
+    else:
+        await interaction.followup.send("Errore durante il recupero delle informazioni.", ephemeral=True)
 # Fine comando /clan
 
 keep_alive()
