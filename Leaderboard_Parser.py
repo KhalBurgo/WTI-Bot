@@ -88,12 +88,4 @@ async def get_all_clans():
     tasks = [fetch_clan_leaderboard(page) for page in range(1, max_pages + 1)]
     results = await asyncio.gather(*tasks)
 
-    return results
-    
-if __name__ == "__main__":
-    result = asyncio.run(search_for_clan("TKBeS"))
-    if result:
-        print("Clan found:", result)
-    else:
-        print("Clan not found.")
-        
+    return results        
