@@ -3,7 +3,7 @@ import discord
 from config import GUILD  # ← OK ORA
 
 # IMPORTANTE: importa l'oggetto GUILD dal main
-from main import GUILD
+#from main import GUILD
 
 class Ping(commands.Cog):
     def __init__(self, bot):
