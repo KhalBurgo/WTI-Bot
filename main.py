@@ -4,7 +4,9 @@ from discord import app_commands
 from discord.ext import commands
 import os
 import aiohttp
-from keep_alive import keep_alive  # Per mantenere attivo su Render
+
+# Per mantenere il bot attivo su Render
+from keep_alive import keep_alive
 
 # Importa la funzione per generare gli embed con le info del clan
 from SQ_Info import fetch_squadron_info
