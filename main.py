@@ -8,9 +8,6 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-GUILD_ID = 1124308157418717215
-GUILD = discord.Object(id=GUILD_ID)
-
 @bot.event
 async def on_ready():
     print(f"✅ Bot connesso come {bot.user}")
