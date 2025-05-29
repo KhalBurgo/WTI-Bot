@@ -32,10 +32,10 @@ async def on_ready():
     print(f"✅ Bot connesso come {bot.user}")
     
     # Elimina tutti i comandi globali (non legati a guild)
-    global_commands = await bot.tree.fetch_commands()
-    for cmd in global_commands:
-        await cmd.delete()
-        print(f"❌ Comando globale rimosso: {cmd.name}")
+    #global_commands = await bot.tree.fetch_commands()
+    #for cmd in global_commands:
+    #    await cmd.delete()
+    #    print(f"❌ Comando globale rimosso: {cmd.name}")
 
     # Sincronizza solo i comandi a livello di guild (server)
     try:
