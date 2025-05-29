@@ -28,6 +28,13 @@ GUILD = discord.Object(id=GUILD_ID)
 async def on_ready():
     await bot.wait_until_ready()
     print(f"✅ Bot connesso come {bot.user}")
+    
+    # ELIMINA comandi GLOBALI vecchi
+    global_commands = await bot.tree.fetch_commands()
+    for cmd in global_commands:
+        await bot.tree.remove_command(cmd.name)
+
+    # Sincronizza solo i comandi a livello di guild (server)
     try:
         synced = await bot.tree.sync(guild=GUILD)
         print(f"🔄 Comandi slash sincronizzati: {len(synced)}")
