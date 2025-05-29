@@ -15,6 +15,7 @@ async def on_ready():
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"cogs.{filename[:-3]}")
+                print(f"Cog caricato: {filename}")
         synced = await bot.tree.sync(guild=GUILD)
         print(f"🔄 Comandi slash sincronizzati: {len(synced)}")
         for cmd in synced:
